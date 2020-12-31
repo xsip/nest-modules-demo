@@ -9,7 +9,7 @@ import { AppController } from './app.controller';
   imports: [
     MongooseModule.forRoot('mongodb://localhost/leanpass'),
     UserModule,
-    BaseAuth.BaseAuthModule.register(UserService, UserModule, 'secret'),
+    BaseAuth.BaseAuthModule.register(UserService, UserModule, 'secret', false),
   ],
   controllers: [AppController],
   exports: [MongooseModule],
