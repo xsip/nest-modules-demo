@@ -4,22 +4,22 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BaseAuth } from 'nest-modules';
 import { UserService } from './user/user.service';
 import { AppController } from './app.controller';
-import { LobbyModule } from './lobby/lobby.module';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost/leanpass'),
     UserModule,
-    LobbyModule,
     BaseAuth.BaseAuthModule.register(
       UserService,
       UserModule,
       'secret',
-      false,
+      true,
       '10h',
     ),
   ],
   controllers: [AppController],
   exports: [MongooseModule],
+  providers: [AppService],
 })
 export class AppModule {}

@@ -1,18 +1,32 @@
 import {
+  applyDecorators,
   Body,
   Controller,
+  createParamDecorator,
   Get,
   HttpException,
   HttpStatus,
   Post,
   Put,
+  SetMetadata,
   UseGuards,
 } from '@nestjs/common';
 import { UserModel } from './models/user.model';
 import { UserService } from './user.service';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { BaseAuth, BaseUser } from 'nest-modules';
 import { Document } from 'mongoose';
+import { AuthGuard } from '@nestjs/passport';
+
+/*export const RoleGuard2 = createParamDecorator((data, req) => {
+  SetMetadata('role', role);
+  return req.args[0].user;
+});*/
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -20,15 +34,20 @@ import { Document } from 'mongoose';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @UseGuards(BaseAuth.JwtAuthGuard)
   @Get('/all')
+  @UseGuards(BaseAuth.JwtAuthGuard)
+  @BaseAuth.RoleGuard(BaseUser.BaseUserRole.ADMIN)
   @ApiResponse({
     status: 201,
     type: [UserModel],
     description: 'Gets all Users',
   })
   private async getAllUsers(@BaseAuth.AuthUser() user: UserModel) {
-    return await this.userService.userModel.find().exec();
+    /*if (user.role === BaseUserRole.ADMIN) {
+    }*/
+    try {
+      return await this.userService.userModel.find().exec();
+    } catch (e) {}
   }
 
   @UseGuards(BaseAuth.JwtAuthGuard)
