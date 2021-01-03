@@ -40,4 +40,27 @@ export class AppService {
       throw new HttpException(e.toString(), errorCode);
     }
   }
+
+  async verifyUser(verificationCode: string) {
+    let errorCode = HttpStatus.INTERNAL_SERVER_ERROR;
+    try {
+      const user = await this.userService.findOne({
+        verificationCode,
+      });
+      if (!user) {
+        errorCode = HttpStatus.BAD_REQUEST;
+        throw new HttpException('Invalid VerificationCode', errorCode);
+      }
+      if (user.isVerified && user.verificationDate) {
+        errorCode = HttpStatus.BAD_REQUEST;
+        throw new HttpException('User Already Verified', errorCode);
+      }
+      user.verificationDate = new Date();
+      user.isVerified = true;
+      await user.save();
+      return true;
+    } catch (e) {
+      throw new HttpException(e.toString(), errorCode);
+    }
+  }
 }
