@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpException,
-  HttpStatus,
-  Post,
-  Put,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
 import { UserModel } from './models/user.model';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -20,34 +11,31 @@ import { Document } from 'mongoose';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @UseGuards(BaseAuth.JwtAuthGuard)
   @Get('/all')
+  @UseGuards(BaseAuth.JwtAuthGuard)
+  @BaseAuth.RoleGuard(BaseUser.BaseUserRole.ADMIN)
   @ApiResponse({
     status: 201,
     type: [UserModel],
     description: 'Gets all Users',
   })
   private async getAllUsers(@BaseAuth.AuthUser() user: UserModel) {
-    return await this.userService.userModel.find().exec();
+    return this.userService.userModel.find().exec();
   }
 
-  @UseGuards(BaseAuth.JwtAuthGuard)
   @Post('/create')
+  @UseGuards(BaseAuth.JwtAuthGuard)
+  @BaseAuth.RoleGuard(BaseUser.BaseUserRole.ADMIN)
   public async createUser(
     @BaseAuth.AuthUser() authUser: UserModel & Document,
     @Body() user: UserModel,
   ) {
-    if (authUser.role === BaseUser.BaseUserRole.ADMIN) {
-      return this.userService.createUser(user);
-    }
-    throw new HttpException(
-      'Only admins can register users',
-      HttpStatus.UNAUTHORIZED,
-    );
+    return this.userService.createUser(user);
   }
 
-  @UseGuards(BaseAuth.JwtAuthGuard)
   @Put('/update')
+  @UseGuards(BaseAuth.JwtAuthGuard)
+  @BaseAuth.RoleGuard(BaseUser.BaseUserRole.ADMIN)
   public async updateUser(
     @BaseAuth.AuthUser() authUser: UserModel & Document,
     @Body() user: UserModel,

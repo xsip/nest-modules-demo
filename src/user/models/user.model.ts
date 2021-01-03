@@ -4,8 +4,9 @@ import { BaseHelpers, BaseUser } from 'nest-modules';
 
 enum TestEnum {
   Test1,
-  Test2
+  Test2,
 }
+
 @Schema({ timestamps: true })
 export class UserModel extends BaseUser.BaseUserModel {
   @ApiProperty(BaseHelpers.enumForSwagger(TestEnum, 'TestEnum'))
