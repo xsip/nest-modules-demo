@@ -4,12 +4,20 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BaseAuth } from 'nest-modules';
 import { UserService } from './user/user.service';
 import { AppController } from './app.controller';
+import { LobbyModule } from './lobby/lobby.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost/leanpass'),
     UserModule,
-    BaseAuth.BaseAuthModule.register(UserService, UserModule, 'secret'),
+    LobbyModule,
+    BaseAuth.BaseAuthModule.register(
+      UserService,
+      UserModule,
+      'secret',
+      false,
+      '10h',
+    ),
   ],
   controllers: [AppController],
   exports: [MongooseModule],
