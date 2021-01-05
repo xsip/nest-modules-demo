@@ -20,12 +20,21 @@ export class AppController {
 
   @ApiResponse({
     status: 201,
-    type: LoginResponse,
-    description: 'Login User',
+    type: Boolean,
+    description: 'Pre Login User',
   })
-  @Post('/login')
-  public async login(@Body() user: LoginDto) {
-    return await this.appService.loginUser(user);
+  @Post('/prelogin')
+  public async preLogin(@Body() user: LoginDto) {
+    return await this.appService.preLoginUser(user);
+  }
+  @ApiResponse({
+    status: 201,
+    type: LoginResponse,
+    description: 'Pre Login User',
+  })
+  @Post('/verifyLogin/:tfaCode')
+  public async verifyLogin(@Param('tfaCode') tfaCode: number) {
+    return await this.appService.tfaLoginCheck(tfaCode);
   }
 
   @ApiResponse({
@@ -36,15 +45,5 @@ export class AppController {
   @Post('/register')
   public async register(@Body() registerDto: RegisterDto) {
     await this.appService.registerUser(registerDto);
-  }
-
-  @ApiResponse({
-    status: 201,
-    type: Boolean,
-    description: 'Verify User',
-  })
-  @Post('/verify/:verificationCode')
-  public async verify(@Param('verificationCode') verificationCode: string) {
-    return await this.appService.verifyUser(verificationCode);
   }
 }
